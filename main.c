@@ -60,7 +60,7 @@ _getparams(int argc, char **argv)
 static void
 _test_parse_json(void)
 {
-    Parse_Json(pJson_path, 0, 0, 0);
+    Parse_Json(pJson_path, 0);
     return;
 }
 

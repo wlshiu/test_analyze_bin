@@ -1,16 +1,38 @@
 
 {
-   "offset" : 0,
-   "program Fail Cnt" : "uint16_t",
-   "stress Mode Run Time" : "uint32_t",
-   "tag name" : "char",
-   "total Run Time" : "uint32_t",
-   "OPTION 0" : [
+    "offset" : 0,
+    "program Fail Cnt" : "uint16_t",
+    "stress Mode Run Time" : "uint32_t",
+    "tag name" : "char",
+    "GROUP 0" : [
+        {
+            "COUNT" : 1,
+            "COUNT" : "Program Fail Cnt",
+            "Audio Configurations Data" :
+            {
+                "Encoding Type" : "uint8_t",
+                "Bitrate Range Min" : "uint16_t",
+                "Bitrate Range Max" : "uint16_t",
+            }
+        },
+        {
+            "COUNT" : 1,
+            "COUNT" : "Program Fail Cnt",
+            "SampleRate Data" :
+            {
+                "SampleRate Available" : "uint16_t",
+            }
+        }
+    ],
+    "total Run Time" : "uint32_t",
+    "OPTION 0" : [
       {
          "option name 0" : {
             "CONDITION" : "Program Fail Cnt",
             "RELATION" : 1,
-            "Group" : [
+            "COUNT" : 1,
+            "COUNT" : "Program Fail Cnt",
+            "OPTION_GROUP" : [
                {
                   "bad Block " : "uint32_t",
                   "ecc Fail Block" : "uint8_t"
@@ -28,5 +50,5 @@
             "RELATION" : 1
          }
       }
-   ]
+    ]
 }

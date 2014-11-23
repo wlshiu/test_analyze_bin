@@ -6,7 +6,7 @@
 #include "parse_json.h"
 
 //=============================================================================
-//				  Constant Definition
+//                Constant Definition
 //=============================================================================
 #define SHOW_PARSING_MSG        0
 
@@ -14,36 +14,34 @@ typedef enum STATE_TYPE_T
 {
     STATE_TYPE_UNKOWN       = 0,
     STATE_TYPE_GROUP,
-    STATE_TYPE_SWITCH,
-    STATE_TYPE_SWITCH_GROUP,
-    STATE_TYPE_SUB_GROUP,
+    STATE_TYPE_OPTION,
+    STATE_TYPE_OPTION_GROUP,
+
 }STATE_TYPE;
 //=============================================================================
-//				  Macro Definition
+//                Macro Definition
 //=============================================================================
 
 //=============================================================================
-//				  Structure Definition
+//                Structure Definition
 //=============================================================================
 typedef struct INFO_CTRL_T
 {
-    char                cmd_name[MAX_MEMBER_NAME_LENGTH];
-    CMD_ATTR            *pInput_cmd_attr;
-    CMD_ATTR            *pOutput_cmd_attr;
-    CMD_ATTR            *pOther_cmd_attr;
-    CMD_ATTR            *pAct_cmd_attr;
+    char                item_name[MAX_MEMBER_NAME_LENGTH];
+    CMD_ATTR            *pInput_item_attr;
+    CMD_ATTR            *pAct_item_attr;
     STATE_TYPE          state_type;
     //uint32_t            isGroup;
     //uint32_t            isSwitch;
 
 }INFO_CTRL;
 //=============================================================================
-//				  Global Data Definition
+//                Global Data Definition
 //=============================================================================
 static uint32_t     g_order_cnt = 0;
-static uint32_t     g_switch_order_cnt = 0;
+static uint32_t     g_option_order_cnt = 0;
 //=============================================================================
-//				  Private Function Definition
+//                Private Function Definition
 //=============================================================================
 static uint32_t
 _refind_member_name(char *pStr, uint32_t length)
@@ -94,6 +92,11 @@ _check_member_type(
         pCur_Member->byte_length = 1;
         pCur_Member->member_type = MEMBER_TYPE_UINT8;
     }
+    else if( !strncmp(pVal, _toStr(char), strlen(_toStr(char))) )
+    {
+        pCur_Member->byte_length = 1;
+        pCur_Member->member_type = MEMBER_TYPE_CHAR;
+    }
     else if( !strncmp(pVal, _toStr(float), strlen(_toStr(float))) )
     {
         pCur_Member->byte_length = 4;
@@ -104,49 +107,9 @@ _check_member_type(
         pCur_Member->byte_length = 4;
         pCur_Member->member_type = MEMBER_TYPE_STRING;
     }
-    else if( !strncmp(pVal, "stringList", strlen("stringList")) )
-    {
-        pCur_Member->byte_length = 4;
-        pCur_Member->member_type = MEMBER_TYPE_STRING;
-    }
-    else if( !strncmp(pVal, "border_uint8_t", strlen("border_uint8_t")) )
-    {
-        pCur_Member->byte_length = 1;
-        pCur_Member->member_type = MEMBER_TYPE_BORDER_UINT8;
-    }
     else
     {
-        int     ret = 0;
-        int     array_size = 0;
-        char    type_str[MAX_MEMBER_NAME_LENGTH] = {0};
 
-        if( (ret = sscanf(pVal, "%u %s", &array_size, type_str)) == 2 )
-        {
-            if( !strncmp(type_str, _toStr(uint32_t), strlen(_toStr(uint32_t))) )
-            {
-                pCur_Member->byte_length   = 4 * array_size;
-                pCur_Member->array_elm_cnt = array_size;
-                pCur_Member->member_type = MEMBER_TYPE_UINT32_ARRAY;
-            }
-            else if( !strncmp(type_str, _toStr(uint16_t), strlen(_toStr(uint16_t))) )
-            {
-                pCur_Member->byte_length   = 2 * array_size;
-                pCur_Member->array_elm_cnt = array_size;
-                pCur_Member->member_type = MEMBER_TYPE_UINT16_ARRAY;
-            }
-            else if( !strncmp(type_str, _toStr(uint8_t), strlen(_toStr(uint8_t))) )
-            {
-                pCur_Member->byte_length   = 1 * array_size;
-                pCur_Member->array_elm_cnt = array_size;
-                pCur_Member->member_type = MEMBER_TYPE_UINT8_ARRAY;
-            }
-            else if( !strncmp(type_str, _toStr(float), strlen(_toStr(float))) )
-            {
-                pCur_Member->byte_length   = 4 * array_size;
-                pCur_Member->array_elm_cnt = array_size;
-                pCur_Member->member_type = MEMBER_TYPE_FLOAT_ARRAY;
-            }
-        }
     }
 
     return 0;
@@ -158,16 +121,35 @@ _get_info_from_json(
     INFO_CTRL           *pInfo_ctrl,
     uint32_t            layer)
 {
+    json_object_object_foreach(jParent, pKey, pObj)
+    {
+        do{int i; for(i=0;i<layer;i++)_msg(SHOW_PARSING_MSG, "  ");}while(0);
+
+        _msg(SHOW_PARSING_MSG, "get key: %s,", pKey);
+        switch( json_object_get_type(pObj) )
+        {
+        case json_type_string:
+            break;
+        case json_type_int:
+            break;
+        case json_type_object:
+            break;
+        case json_type_array:
+            break;
+        default:
+            printf("*");
+            break;
+        }
+    }
+    return 0;
 }
 //=============================================================================
-//				  Public Function Definition
+//                Public Function Definition
 //=============================================================================
 uint32_t
 Parse_Json(
     char        *pPath,
-    CMD_ATTR    *pInput_cmd_attr,
-    CMD_ATTR    *pOutput_cmd_attr,
-    CMD_ATTR    *pOther_cmd_attr)
+    CMD_ATTR    *pInput_cmd_attr)
 {
     uint32_t        result = 0;
     FILE            *fp = 0;
@@ -204,8 +186,6 @@ Parse_Json(
             INFO_CTRL               info_ctrl = {0};
 
             info_ctrl.pInput_cmd_attr  = pInput_cmd_attr;
-            info_ctrl.pOutput_cmd_attr = pOutput_cmd_attr;
-            info_ctrl.pOther_cmd_attr  = pOther_cmd_attr;
             g_order_cnt = 0;
             _get_info_from_json(jRoot, &info_ctrl, 0);
         }
