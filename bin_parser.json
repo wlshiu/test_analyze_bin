@@ -1,0 +1,32 @@
+
+{
+   "offset" : 0,
+   "program Fail Cnt" : "uint16_t",
+   "stress Mode Run Time" : "uint32_t",
+   "tag name" : "char",
+   "total Run Time" : "uint32_t",
+   "OPTION 0" : [
+      {
+         "option name 0" : {
+            "CONDITION" : "Program Fail Cnt",
+            "RELATION" : 1,
+            "Group" : [
+               {
+                  "bad Block " : "uint32_t",
+                  "ecc Fail Block" : "uint8_t"
+               },
+               {
+                  "bad page" : "uint16_t",
+                  "ecc fail page" : "uint32_t"
+               }
+            ]
+         }
+      },
+      {
+         "option name 1" : {
+            "CONDITION" : "Read Fail Cnt",
+            "RELATION" : 1
+         }
+      }
+   ]
+}
